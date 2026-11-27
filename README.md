@@ -1,30 +1,36 @@
 # UAE Real Estate 10-Year Trend Prediction
 
-CDS 4003 | Data Science for Business Application | Python 3.12
+CDS 4003 | Data Science for Business Application | Higher Colleges of Technology
 
-- **Team:** [Insert all team members, GitHub usernames, roles and contribution evidence.]
-- **GitHub repository:** [Insert the new repository URL.]
-- **Live Streamlit application:** Deployed, as confirmed by the team. [Insert the public Streamlit URL.]
+- **Project repository:** [h7amdahh/-real_estate_10yr_prediction](https://github.com/h7amdahh/-real_estate_10yr_prediction)
+- **Team GitHub accounts:** [h7amdahh](https://github.com/h7amdahh), [afra-star23](https://github.com/afra-star23), [raaweya](https://github.com/raaweya)
+- **Deployment:** Streamlit Community Cloud (deployment completed, as confirmed by the team).
 
-## Business problem
+## 1. Business problem and objectives
 
-The project classifies a household profile into one of two recorded synthetic 10-year real estate trend labels: `Increased` or `Dropped`. The Streamlit app accepts a household's financial and property-related information and displays a predicted class and model probabilities. The results measure agreement with synthetic labels, not verified future property prices.
+Real estate decisions involve substantial financial commitments. This project develops a classification tool for UAE household profiles using financial and property-related information. It predicts the recorded synthetic ten-year trend label (`Increased` or `Dropped`) to support initial scenario assessments by property buyers and household advisers.
 
-[Insert the instructor-approved business objective, intended stakeholders and measurable success criteria.]
+The objectives are to prepare at least 200,000 records with 20 original columns, compare at least two classifiers, select a model using macro F1, evaluate it on held-out data, and deploy an interactive prediction application.
 
-## Dataset
+## 2. Dataset
 
-- File: `real_estate_10yr_prediction.csv` (included in the project repository).
-- Source: AI-generated synthetic dataset prepared for the course project, as confirmed by the team.
-- Instructor permission: the team confirmed that synthetic data was permitted. Retain the original written approval if available.
-- License: not specified in the supplied project files. [Insert the applicable permission/license after confirmation.]
-- Raw dataset: 300,000 rows, 20 columns, including the target and record identifier.
-- Target: `RealEstate_10Yr_Trend`.
-- [Add actual dataset search evidence and the original AI generation code or prompt record.]
+The [dataset](real_estate_10yr_prediction.csv) is AI-generated synthetic data prepared for the course project with instructor permission, as confirmed by the team. It is included in the repository.
 
-See [data dictionary](docs/data_dictionary.md), [synthetic data provenance](docs/synthetic_data_provenance.md), and [observed quality issues](docs/data_quality_audit.md). The audit is reproducible using `scripts/audit_dataset.py`; it is not the original data generation script.
+| Attribute | Description |
+|---|---|
+| Original dimensions | 300,000 rows × 20 columns |
+| Cleaned records | 268,187 |
+| Target | `RealEstate_10Yr_Trend` |
+| Classes | Increased and Dropped |
+| Model inputs | 11 original predictors |
 
-## Repository files
+Dataset documentation:
+
+- [Data dictionary](data_dictionary.md)
+- [Data quality audit](data_quality_audit.md)
+- [Synthetic data provenance](synthetic_data_provenance.md)
+
+## 3. Repository structure
 
 ```text
 .
@@ -36,53 +42,57 @@ See [data dictionary](docs/data_dictionary.md), [synthetic data provenance](docs
 ├── model.pkl
 ├── app.py
 ├── requirements.txt
-├── requirements-notebook.txt
-├── docs/
-│   ├── data_dictionary.md
-│   ├── synthetic_data_provenance.md
-│   └── data_quality_audit.md
-└── scripts/
-    └── audit_dataset.py
+├── data_dictionary.md
+├── data_quality_audit.md
+└── synthetic_data_provenance.md
 ```
 
-## Reproduce the project
+| File | Purpose |
+|---|---|
+| `real_estate.ipynb` | Data preparation, EDA, feature engineering, model development, tuning and evaluation |
+| `cleaning.py` | Reusable input cleaning |
+| `financial_features.py` | Reusable financial feature engineering |
+| `model.pkl` | Saved trained classification pipeline |
+| `app.py` | Streamlit prediction interface |
+| `requirements.txt` | Application dependencies |
 
-Use Python 3.12, as specified in the notebook. Open a terminal in the repository root. The team researched package versions for compatibility. The notebook dependencies file extends the existing app requirements with visualization and Jupyter packages. The app requirements should retain `scikit-learn==1.6.1` for the saved model.
+## 4. Running the project
+
+The team researched package versions for compatibility. Python 3.12 is specified in the notebook. Run commands from the repository root.
+
+### Run the notebook
+
+Install the notebook dependencies using the team's `requirements-notebook.txt` file. If it is not included in your checkout, obtain it from the team before running the notebook.
 
 ```bash
 python -m pip install -r requirements-notebook.txt
 python -m notebook real_estate.ipynb
 ```
 
-Select the Python kernel for that environment and run the notebook from top to bottom. Keep the uncompressed CSV in the repository root. Running the notebook recreates `cleaning.py`, `financial_features.py`, `model.pkl`, `app.py` and `requirements.txt`. The notebook's requirements-writing cell must also retain scikit-learn 1.6.1.
+Select the matching Python kernel and run the cells in order. The dataset-loading cell must reference the included `real_estate_10yr_prediction.csv` file. Running the notebook recreates the trained model and deployment files. Use the scikit-learn version used to train the saved pipeline; the original saved model uses 1.6.1. Ensure the requirements file and notebook's requirements-writing cell use compatible versions before retraining or deploying.
 
-To run the saved app without retraining:
+### Run the application locally
 
 ```bash
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-To reproduce the raw data audit:
+The Streamlit Community Cloud entry point is `app.py`. Keep the saved model, Python helper modules and dependency file in the repository root.
 
-```bash
-python scripts/audit_dataset.py
-```
+## 5. Data preparation and exploration
 
-## Data preparation and exploration
+- Removed 5,887 exact duplicate records and 25,926 records with unusable targets, leaving 268,187 labeled records.
+- Standardized categorical labels and numeric formats, handled invalid values and flagged outliers using the IQR rule.
+- Used median numerical imputation, most-frequent categorical imputation, standard scaling and one-hot encoding within the model pipeline.
+- Analyzed class balance, emirate-level label proportions, income distribution, mortgage rates and financial correlations.
+- Created six financial features: savings-to-income ratio, budget-to-income ratio, estimated monthly debt, income after debt, years to save the budget, and estimated monthly interest.
 
-- Removed 5,887 exact duplicate records, then 25,926 records with missing targets after target normalization; 268,187 labeled records remained.
-- Standardized inconsistent category labels and numeric formats, checked invalid values, and flagged outliers using IQR.
-- Used 11 raw predictors; excluded the record identifier and direct demographic fields. Gender and residency status were retained separately for an error audit.
-- Created six financial features: savings-to-income ratio, budget-to-income ratio, monthly debt, income after debt, years to save the budget and estimated monthly interest.
-- Used median numerical imputation, most-frequent categorical imputation, standard scaling and one-hot encoding inside a scikit-learn pipeline.
-- Explored missing values, class balance, emirate-level label proportions, income distribution, mortgage rates and financial correlations. Target relationship plots use the training partition.
+## 6. Model development and evaluation
 
-## Model development and evaluation
+A stratified 80/20 split (random state 42) produced 214,549 training records and 53,638 held-out test records. Initial model comparison and five-fold cross-validation used a stratified training sample of 12,000 records.
 
-A stratified 80/20 split (random state 42) produced 214,549 training records and 53,638 held-out test records. Initial comparison and five-fold cross-validation used a 12,000-record training sample. Saved notebook cross-validation results:
-
-| Model | Mean macro F1 |
+| Model | Mean CV macro F1 |
 |---|---:|
 | Dummy classifier | 0.3831 |
 | Logistic regression | 0.7120 |
@@ -90,22 +100,20 @@ A stratified 80/20 split (random state 42) produced 214,549 training records and
 | Random forest | 0.7020 |
 | Histogram gradient boosting | 0.7189 |
 
-GridSearchCV selected 15 maximum leaf nodes. The final histogram gradient boosting classifier was fitted on the full training set and evaluated on the held-out test set.
+Histogram gradient boosting achieved the highest mean macro F1. GridSearchCV selected 15 maximum leaf nodes, and the final model was fitted to the full training partition.
 
-| Test metric | Result |
+| Held-out test metric | Result |
 |---|---:|
 | Accuracy | 75.51% |
 | Macro F1 | 72.62% |
 | ROC-AUC | 81.46% |
 
-These figures are from the saved notebook outputs. The notebook also includes classification reports, confusion matrices, a demographic error audit and permutation importance.
+These results are from the saved notebook. The notebook also contains confusion matrices, classification reports, permutation importance and a demographic error audit.
 
-## Deployment
+## 7. Deployment and business value
 
-`app.py` loads the fitted pipeline from `model.pkl`. It provides four categorical inputs and seven numerical inputs, then displays the predicted trend and a probability chart. Keep `app.py`, `model.pkl`, `cleaning.py`, `financial_features.py` and `requirements.txt` together. The Streamlit Community Cloud entry point is `app.py`.
+The Streamlit app loads the fitted pipeline from `model.pkl`, accepts four categorical and seven numerical inputs, and presents a predicted trend and class probabilities. Users can compare household financial scenarios and examine the model output. The results represent predictions of synthetic labels, not validated forecasts of future property prices or investment advice.
 
-## Repository history and documentation
+## 8. Repository history
 
-The team reports that Hamdah's original email account was closed. She created a new email and GitHub account and manually reuploaded the project. The new repository's commit history therefore does not preserve the original development history. [Add available original contribution evidence and any instructor confirmation.]
-
-The team reports that Codex was used to prepare the unfinished README with the instructor's permission. [Complete the required AI-use declaration separately with an accurate record of all tools and uses.]
+The original email account used by Hamdah was closed. A new email and GitHub account were created, and the project files were manually reuploaded. Consequently, the current repository history does not preserve the original development commits. The team also confirms that Codex was used to prepare the unfinished README with instructor permission.
